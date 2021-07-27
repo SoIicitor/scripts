@@ -4,10 +4,10 @@ local library = {flags = {}, windows = {}, open = true}
 local runService = game:GetService"RunService"
 local tweenService = game:GetService"TweenService"
 local textService = game:GetService"TextService"
-local inputService = game:GetService"UserInputService"
+local input = game:GetService"UserInputService"
 
 --Locals
-local dragging, dragInput, dragStart, startPos, dragObject
+local dragging, dragut, dragStart, startPos, dragObject
 
 local blacklistedKeys = { --add or remove keys if you find the need to
 	Enum.KeyCode.Unknown,Enum.KeyCode.W,Enum.KeyCode.A,Enum.KeyCode.S,Enum.KeyCode.D,Enum.KeyCode.Slash,Enum.KeyCode.Tab,Enum.KeyCode.Backspace,Enum.KeyCode.Escape
@@ -802,6 +802,7 @@ local function createList(option, parent, holder)
 				clicking = true
 				tweenService:Create(label, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(10, 10, 10)}):Play()
 				self:SetValue(value)
+				self:Close()
 			end
 			if input.UserInputType == Enum.UserInputType.MouseMovement then
 				inContact = true
