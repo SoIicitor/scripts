@@ -1615,7 +1615,8 @@ function library:Init()
 	elseif get_hidden_gui then
 		get_hidden_gui(self.base)
 	else
-		warn("Couldn't find protect gui")
+		self.base.Name = tostring(math.random())
+		self.base.Parent = game:GetService"CoreGui"
 	end
 	self.base.Parent = game:GetService"CoreGui"
 	
