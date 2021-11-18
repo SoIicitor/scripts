@@ -40,11 +40,6 @@ local function ConcealCharacter()
     local Clone = Character.LowerTorso.Root:Clone()
     Character.LowerTorso.Root:Destroy()
     Clone.Parent = Character.LowerTorso.Parent
-    
-    for _, Script in ipairs(Character:GetDescendants()) do 
-        if not Script:IsA("Script") then continue end
-        Script:Destroy()
-    end 
 end
 
 local function TweenCharacter(Position, Speed)
@@ -55,7 +50,7 @@ local function TweenCharacter(Position, Speed)
     local Speed = Speed or 2000
     
     local TweenSpeed = (Character.HumanoidRootPart.Position - Position).Magnitude / Speed
-    local TweenObject = TweenService:Create(Character.HumanoidRootPart, TweenInfo.new(TweenSpeed, Enum.EasingStyle.Quad), {CFrame = CFrame.new(Position)})
+    local TweenObject = TweenService:Create(Character.HumanoidRootPart, TweenInfo.new(TweenSpeed, Enum.EasingStyle.Linear), {CFrame = CFrame.new(Position)})
     
     TweenObject:Play(); TweenObject:Destroy()
     
@@ -88,11 +83,9 @@ local function Search()
         
         warn("FOUND FRUIT!!!!")
         
-        task.wait(2)
-        
         repeat
             pcall(function()
-                local TweenObject = TweenCharacter(v.Leaf.Position, 2000)
+                local TweenObject = TweenCharacter(v.Leaf.Position, 400)
                 TweenObject.Completed:Wait()
                 TweenObject:Destroy()
                 
@@ -134,17 +127,9 @@ CharacterAdded(Character)
 
 --remove annoying ass straming enabaled bullshit gui
 
-game:GetService("GuiService"):SetGameplayPausedNotificationEnabled(false)
-
 pcall(function()
     Client.PlayerGui.MainGUI.Content:Destroy()
     workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
-end)
-
-pcall(function()
-    for _, Connection in pairs(getconnections(Client.GameplayPaused)) do
-        Connection:Disable()
-    end
 end)
 
 task.spawn(function()
@@ -155,10 +140,10 @@ task.spawn(function()
             if IsFruit == true then break end
             
             if Character:FindFirstChild("HumanoidRootPart") then
-                local TweenObject = TweenCharacter(Position)
+                local TweenObject = TweenCharacter(Position, 300)
                 
                 while IsFruit == false and Character and Character:FindFirstChild("HumanoidRootPart") do 
-                    if Client:DistanceFromCharacter(Position) <= 3000 then 
+                    if Client:DistanceFromCharacter(Position) <= 800 then 
                         Character.HumanoidRootPart.CFrame = CFrame.new(Position)
                         break
                     end 
@@ -175,9 +160,10 @@ task.spawn(function()
             end
         end
         
+        task.wait(3)
         warn("Finished cycle!!")
-        ServerHop()
         
+        ServerHop()
         task.wait()
     end
 end)
