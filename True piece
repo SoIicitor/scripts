@@ -41,6 +41,10 @@ local function ConcealCharacter()
     Character.LowerTorso.Root:Destroy()
     Clone.Parent = Character.LowerTorso.Parent
     
+    for _, Script in ipairs(Character:GetDescendants()) do 
+        if not Script:IsA("Script") then continue end
+        Script:Destroy()
+    end 
 end
 
 local function TweenCharacter(Position, Speed)
@@ -88,7 +92,7 @@ local function Search()
         
         repeat
             pcall(function()
-                local TweenObject = TweenCharacter(v.Leaf.Position, 300)
+                local TweenObject = TweenCharacter(v.Leaf.Position, 2000)
                 TweenObject.Completed:Wait()
                 TweenObject:Destroy()
                 
@@ -122,6 +126,7 @@ end
 
 local function CharacterAdded(NewCharacter)
     Character = NewCharacter
+    ConcealCharacter()
 end
 
 Client.CharacterAdded:Connect(CharacterAdded)
@@ -150,7 +155,7 @@ task.spawn(function()
             if IsFruit == true then break end
             
             if Character:FindFirstChild("HumanoidRootPart") then
-                local TweenObject = TweenCharacter(Position, 250)
+                local TweenObject = TweenCharacter(Position)
                 
                 while IsFruit == false and Character and Character:FindFirstChild("HumanoidRootPart") do 
                     if Client:DistanceFromCharacter(Position) <= 3000 then 
