@@ -88,7 +88,7 @@ local function Search()
         
         repeat
             pcall(function()
-                local TweenObject = TweenCharacter(v.Leaf.Position, 700)
+                local TweenObject = TweenCharacter(v.Leaf.Position, 300)
                 TweenObject.Completed:Wait()
                 TweenObject:Destroy()
                 
@@ -132,11 +132,7 @@ CharacterAdded(Character)
 game:GetService("GuiService"):SetGameplayPausedNotificationEnabled(false)
 
 pcall(function()
-    game:GetService("ReplicatedStorage").Remotes.StartUp:InvokeServer()
-
-    Client.PlayerGui.MainGUI:Destroy()
-    Client.PlayerGui.Menu.Enabled = true
-    Client.PlayerGui.Hotkeys.Enabled = true
+    Client.PlayerGui.MainGUI.Content:Destroy()
     workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
 end)
 
@@ -154,7 +150,7 @@ task.spawn(function()
             if IsFruit == true then break end
             
             if Character:FindFirstChild("HumanoidRootPart") then
-                local TweenObject = TweenCharacter(Position)
+                local TweenObject = TweenCharacter(Position, 250)
                 
                 while IsFruit == false and Character and Character:FindFirstChild("HumanoidRootPart") do 
                     if Client:DistanceFromCharacter(Position) <= 3000 then 
@@ -174,15 +170,11 @@ task.spawn(function()
             end
         end
         
+        warn("Finished cycle!!")
+        ServerHop()
+        
         task.wait()
     end
-end)
-
-task.spawn(function()
-    while true do
-        task.wait(HopDuration)
-        ServerHop()
-    end 
 end)
 
 while true do 
