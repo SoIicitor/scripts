@@ -133,6 +133,7 @@ game:GetService("GuiService"):SetGameplayPausedNotificationEnabled(false)
 
 pcall(function()
     game:GetService("ReplicatedStorage").Remotes.StartUp:InvokeServer()
+
     Client.PlayerGui.MainGUI:Destroy()
     Client.PlayerGui.Menu.Enabled = true
     Client.PlayerGui.Hotkeys.Enabled = true
