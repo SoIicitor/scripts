@@ -132,7 +132,15 @@ CharacterAdded(Character)
 game:GetService("GuiService"):SetGameplayPausedNotificationEnabled(false)
 
 pcall(function()
-    for _, Connection in pairs(getconnections(game.Players.LocalPlayer.GameplayPaused)) do
+    game:GetService("ReplicatedStorage").Remotes.StartUp:InvokeServer()
+    Client.PlayerGui.MainGUI:Destroy()
+    Client.PlayerGui.Menu.Enabled = true
+    Client.PlayerGui.Hotkeys.Enabled = true
+    workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+end)
+
+pcall(function()
+    for _, Connection in pairs(getconnections(Client.GameplayPaused)) do
         Connection:Disable()
     end
 end)
