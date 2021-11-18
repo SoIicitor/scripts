@@ -128,8 +128,16 @@ CharacterAdded(Character)
 --remove annoying ass straming enabaled bullshit gui
 
 pcall(function()
-    Client.PlayerGui.MainGUI.Content:Destroy()
+    repeat task.wait(.2) until Client.PlayerGui.MainGUI.Enabled == true
+    Client.PlayerGui.MainGUI:Destroy()
+    
+    Client.PlayerGui.PlayerListGUI.Enabled = true
+    Client.PlayerGui.Hotkeys.Enabled = true
+    Client.PlayerGui.PromptGUI.Enabled = true
+    Client.PlayerGui.Menu.Enabled = true
     workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+    
+    pcall(game:GetService("ReplicatedStorage").Remotes.StartUp:InvokeServer())
 end)
 
 task.spawn(function()
