@@ -1,0 +1,182 @@
+
+if not game:IsLoaded() then 
+    game.Loaded:Wait()
+end
+
+local TweenService = game:GetService("TweenService")
+
+local Client = game:GetService("Players").LocalPlayer
+local Character = Client.Character or Client.CharacterAdded:Wait()
+
+local CanFarm = true
+local IsFruit = false
+
+local FruitsFound = 0
+local HopDuration = 70
+
+local Positions = {
+    Vector3.new(-2624.33, 250, -1919.87),
+    Vector3.new(-6796.6494140625, 250.15170288086, 9840.7822265625),
+    Vector3.new(-6191.087890625, 250, 6220.3452148438),
+    Vector3.new(-5791.087890625, 250, 6220.3452148438),
+    Vector3.new(-202.46600341797, 250, 5962.3427734375),
+    Vector3.new(197.53399658203, 250, 5962.3427734375),
+    Vector3.new(1300.0989990234, 250, 1999.9899902344),
+    Vector3.new(1700.1, 250, 1999.9899902344),
+    Vector3.new(2505.1999511719, 250, -2200.0209960938),
+    Vector3.new(5999.9428710938, 250, -5799.9169921875),
+    Vector3.new(3925.61, 250, 8172.51),
+    Vector3.new(-3024.33, 250, -1919.87),
+    Vector3.new(5838.03, 250, 5301.91),
+    Vector3.new(6238.03, 250, 5301.91),
+    Vector3.new(2505.2, 250, -1800.02),
+    Vector3.new(2505.2, 250, -2200.02),
+    Vector3.new(9.896, 502, -7857.5),
+    Vector3.new(-3024.33, 250, -1919.87),
+}
+
+local function ConcealCharacter()
+    repeat task.wait(.5) until Character:FindFirstChild("LowerTorso") and Character.LowerTorso:FindFirstChild("Root")
+    local Clone = Character.LowerTorso.Root:Clone()
+    Character.LowerTorso.Root:Destroy()
+    Clone.Parent = Character.LowerTorso.Parent
+    
+end
+
+local function TweenCharacter(Position, Speed)
+    if not Character:FindFirstChild("HumanoidRootPart") then return end
+    
+    Character.HumanoidRootPart.Anchored = true
+    
+    local Speed = Speed or 2000
+    
+    local TweenSpeed = (Character.HumanoidRootPart.Position - Position).Magnitude / Speed
+    local TweenObject = TweenService:Create(Character.HumanoidRootPart, TweenInfo.new(TweenSpeed, Enum.EasingStyle.Quad), {CFrame = CFrame.new(Position)})
+    
+    TweenObject:Play(); TweenObject:Destroy()
+    
+    return TweenObject
+end
+
+local function ServerHop()
+    if IsFruit == true then return end
+    
+	local x = {}
+	
+	for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+		if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId then
+			x[#x + 1] = v.id
+		end
+	end
+	
+	if #x > 0 then
+	    if IsFruit then return end
+		game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, x[math.random(1, #x)])
+	end
+end
+
+local function Search()
+    if IsFruit == true then return end
+    
+    local function Grab(v)
+        IsFruit = true
+        FruitsFound = FruitsFound + 1 
+        
+        warn("FOUND FRUIT!!!!")
+        
+        task.wait(2)
+        
+        repeat
+            pcall(function()
+                local TweenObject = TweenCharacter(v.Leaf.Position, 700)
+                TweenObject.Completed:Wait()
+                TweenObject:Destroy()
+                
+                Character.HumanoidRootPart.Anchored = false
+                Character.HumanoidRootPart.CFrame = v.Leaf.CFrame
+                
+                task.wait(3)
+                
+                fireproximityprompt(v.Leaf.ProximityPromptDF)
+            end)
+        until v.Parent == nil or v:FindFirstChild("Leaf") == nil or v:FindFirstChild("ProximityPromptDF") == nil
+        
+        warn("Collected fruit!!!!")
+        IsFruit = false
+    end 
+    
+    for i, v in pairs(game.Workspace:GetChildren()) do
+        if v:IsA("Model") and v:FindFirstChild("Leaf") then
+            if not v.Leaf:FindFirstChild("ProximityPromptDF") then continue end
+            Grab(v)
+        end
+    end
+    
+    for i, v in pairs(game.Workspace.Map.Trees:GetChildren()) do
+        if v:IsA("Model") and v:FindFirstChild("Leaf") and v:FindFirstChild("MeshPart1") then
+            if not v.Leaf:FindFirstChild("ProximityPromptDF") then continue end
+            Grab(v)
+        end
+    end
+end 
+
+local function CharacterAdded(NewCharacter)
+    Character = NewCharacter
+end
+
+Client.CharacterAdded:Connect(CharacterAdded)
+CharacterAdded(Character)
+
+--remove annoying ass straming enabaled bullshit gui
+
+game:GetService("GuiService"):SetGameplayPausedNotificationEnabled(false)
+
+pcall(function()
+    for _, Connection in pairs(getconnections(game.Players.LocalPlayer.GameplayPaused)) do
+        Connection:Disable()
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if not CanFarm then continue end
+        
+        for _, Position in ipairs(Positions) do -- Load map
+            if IsFruit == true then break end
+            
+            if Character:FindFirstChild("HumanoidRootPart") then
+                local TweenObject = TweenCharacter(Position)
+                
+                while IsFruit == false and Character and Character:FindFirstChild("HumanoidRootPart") do 
+                    if Client:DistanceFromCharacter(Position) <= 3000 then 
+                        Character.HumanoidRootPart.CFrame = CFrame.new(Position)
+                        break
+                    end 
+                    task.wait(0.25)
+                end
+                
+                if TweenObject then
+                    TweenObject:Pause(); TweenObject:Destroy()
+                end
+                
+                Character.HumanoidRootPart.Anchored = false
+                
+                print("Arrived")
+            end
+        end
+        
+        task.wait()
+    end
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(HopDuration)
+        ServerHop()
+    end 
+end)
+
+while true do 
+    Search()
+    task.wait(0.25)
+end
